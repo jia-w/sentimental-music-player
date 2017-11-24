@@ -223,7 +223,6 @@ void Touch_Configuration()
 
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
 	GPIO_Init(GPIOC,&GPIO_InitStructure);
-
 }
 
 

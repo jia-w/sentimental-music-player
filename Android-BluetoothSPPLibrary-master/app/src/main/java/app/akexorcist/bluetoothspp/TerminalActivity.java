@@ -144,6 +144,22 @@ public class TerminalActivity extends Activity {
                 }
             }
         });
+        Button btnOn = (Button)findViewById(R.id.btnOn);
+        btnOn.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bt.send("on", true);
+                etMessage.setText("");
+            }
+        });
+        Button btnOff = (Button)findViewById(R.id.btnOff);
+        btnOff.setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                bt.send("off", true);
+                etMessage.setText("");
+            }
+        });
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {

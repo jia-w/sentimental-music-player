@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "gamsong_usart.h": "c",
+        "lcd.h": "c",
+        "stm32f10x_gpio.h": "c",
+        "stm32f10x_rcc.h": "c"
+    }
+}

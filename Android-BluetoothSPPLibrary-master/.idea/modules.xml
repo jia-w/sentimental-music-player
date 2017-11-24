@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://C:\Users\JIA\Desktop\Android-BluetoothSPPLibrary-master\Android-BluetoothSPPLibrary.iml" filepath="C:\Users\JIA\Desktop\Android-BluetoothSPPLibrary-master\Android-BluetoothSPPLibrary.iml" />
+      <module fileurl="file://$PROJECT_DIR$/Android-BluetoothSPPLibrary-master.iml" filepath="$PROJECT_DIR$/Android-BluetoothSPPLibrary-master.iml" />
+      <module fileurl="file://C:\Users\JIA\Desktop\Android-BluetoothSPPLibrary-master\BluetoothSPP.iml" filepath="C:\Users\JIA\Desktop\Android-BluetoothSPPLibrary-master\BluetoothSPP.iml" />
+      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/library/library.iml" filepath="$PROJECT_DIR$/library/library.iml" />
+    </modules>
+  </component>
+</project>

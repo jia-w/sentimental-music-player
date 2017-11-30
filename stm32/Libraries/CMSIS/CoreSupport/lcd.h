@@ -24,7 +24,7 @@
 #define YELLOW        	 0xFFE0
 #define BROWN 			 0XBC40 
 #define BRRED 			 0XFC07 
-#define GRAY  			 0X8430 K
+#define GRAY  			 0X8430
 #define BACK_COLOR	0xFFFF
 /*--------Color---------------*/
 #define WHITE         	 0xFFFF

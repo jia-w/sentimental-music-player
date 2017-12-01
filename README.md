@@ -2,7 +2,6 @@
 
 flash load ./mon_4/Debug/mon_4.axf
 
-
 flash load ./mon_4/flashclear.axf
 
 1. Bluetooth 

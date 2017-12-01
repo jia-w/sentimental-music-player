@@ -1,10 +1,18 @@
 #ifndef __GAMSONG_USART_H__
 #define __GAMSONG_USRAT_H__
 
+#include <stdint.h>
+#define PUTTY		((USART_TypeDef *) USART1_BASE)
+#define BLUETOOTH	((USART_TypeDef *) USART2_BASE)
+#define WIFI		((USART_TypeDef *) USART3_BASE)
 
-void USART1_RCC_Init();     // putty     RCC_APB2 on;(AFIO,GPIOA,USART1)
-void USART2_RCC_Init();     // bluetooth RCC_APB1 on;(AFIO,GPIOA,USART2)
-void USART3_RCC_Init();     // WIFI      RCC_APB1 on;(AFIO,GPIOB,USART3)
+extern uint16_t USART1_READY;
+extern uint16_t USART2_READY;
+extern uint16_t USART3_READY;
+
+void USART1_RCC_Init(void);     // putty     RCC_APB2 on;(AFIO,GPIOA,USART1)
+void USART2_RCC_Init(void);     // bluetooth RCC_APB1 on;(AFIO,GPIOA,USART2)
+void USART3_RCC_Init(void);     // WIFI      RCC_APB1 on;(AFIO,GPIOB,USART3)
 
 
 /******************************************************************
@@ -23,20 +31,27 @@ USART1_REMAP
 0: No remap (TX/PA9, RX/PA10)
 1: Remap (TX/PB6, RX/PB7)
 *******************************************************************/
-void USART1_GPIO_Init();    // putty     GPIO on;(A9,A10) - no remap
-void USART2_GPIO_Init();    // bluetooth GPIO on;(A2,A3)  - no remap
-void USART3_GPIO_Init();    // WIFI      GPIO on;(B10,B11)- no remap
+void USART1_GPIO_Init(void);    // putty     GPIO on;(A9,A10) - no remap
+void USART2_GPIO_Init(void);    // bluetooth GPIO on;(A2,A3)  - no remap
+void USART3_GPIO_Init(void);    // WIFI      GPIO on;(B10,B11)- no remap
 
 void USART1_Configure(int Baudrate);    // putty     config;
 void USART2_Configure(int Baudrate);    // bluetooth config;
 void USART3_Configure(int Baudrate);    // WIFI      config;
 
-void USART1_InterruptConfigure();   // putty     Interrupt(EXTI : EXTI_Line10, NVIC : USART1_IRQn, prioirty = 1,1)
-void USART2_InterruptConfigure();   // bluetoooh Interrupt(EXTI : EXTI_Line3 , NVIC : USART2_IRQn, prioirty = 0,1)
-void USART3_InterruptConfigure();   // WIFI      Interrupt(EXTI : EXTI_Line11, NVIC : USART3_IRQn, prioirty = 0,0)
+void USART1_InterruptConfigure(void);   // putty     Interrupt(EXTI : EXTI_Line10, NVIC : USART1_IRQn, prioirty = 1,1)
+void USART2_InterruptConfigure(void);   // bluetoooh Interrupt(EXTI : EXTI_Line3 , NVIC : USART2_IRQn, prioirty = 0,1)
+void USART3_InterruptConfigure(void);   // WIFI      Interrupt(EXTI : EXTI_Line11, NVIC : USART3_IRQn, prioirty = 0,0)
 
-void USART1_IRQHandler();           // putty     method when interrupt is working.
-void USART2_IRQHandler();           // bluetooth method when interrupt is working.
-void USART3_IRQHandler();           // WIFI      method when interrupt is working.
+void USART_SendPeriod(USART_TypeDef *USARTx);
+void USART_SendString(USART_TypeDef *USARTx, uint8_t *buffer, int buffer_SZ);
+
+void USART1_Handler_Method(void);
+void USART2_Handler_Method(void);
+void USART3_Handler_Method(void);
+
+void USART1_IRQHandler(void);           // putty     method when interrupt is working.
+void USART2_IRQHandler(void);           // bluetooth method when interrupt is working.
+void USART3_IRQHandler(void);           // WIFI      method when interrupt is working.
 
 #endif

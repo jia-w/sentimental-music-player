@@ -4,14 +4,11 @@
 #include <stm32f10x_gpio.h>
 #include <stm32f10x_rcc.h>
 #include <stm32f10x_usart.h>
-#include "Gamsong_led.h"
-#include "Gamsong_usart.h"
-
 #include <string.h>
-#include "Gamsong_usart.h"
+
 #include "Gamsong_led.h"
 #include "Gamsong_usart.h"
-
+#include "Gamsong_wifi.h"
 
 
 void SysInit(void) {
@@ -121,14 +118,18 @@ int main(void) {
 
 	USART2_RCC_Init();
 	USART2_GPIO_Init();
-	USART2_Configure(115200);
+	USART2_Configure(9600);
 	USART2_InterruptConfigure();
 
-	//rx-ÁÖÈ², tx-³ë¶û,
 	USART3_RCC_Init();
 	USART3_GPIO_Init();
 	USART3_Configure(115200);
 	USART3_InterruptConfigure();
+
+	UART4_RCC_Init();
+	UART4_GPIO_Init();
+	UART4_Configure(115200);
+	UART4_InterruptConfigure();
 
 	while (1){
 		if(USART1_READY){
@@ -142,6 +143,10 @@ int main(void) {
 		if(USART3_READY){
 			USART3_Handler_Method();
 			USART3_READY = 0;
+		}
+		if(UART4_READY){
+			UART4_Handler_Method();
+			UART4_READY = 0;
 		}
 	}
 	return 0;

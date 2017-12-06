@@ -314,6 +314,7 @@ void USART2_Handler_Method(){
 
 void USART3_Handler_Method(){
 	USART_SendString(USART1, USART3_M, USART3_SEND);
+	mp3_send_cmd (0x01);
 	USART3_SEND = 0;
 }
 

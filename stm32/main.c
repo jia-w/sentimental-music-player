@@ -5,11 +5,29 @@
 #include <stm32f10x_rcc.h>
 #include <stm32f10x_usart.h>
 #include <string.h>
+#include <math.h>
 
+#include "lcd.h"
+#include "Touch.h"
 #include "Gamsong_led.h"
 #include "Gamsong_usart.h"
+#include "Gamsong_adc.h"
+#include "Gamsong_mp3.h"
 #include "Gamsong_wifi.h"
 
+
+int i = 0;
+int color[12]={WHITE,CYAN,BLUE,RED,MAGENTA,LGRAY,GREEN,YELLOW,BROWN,BRRED,GRAY};
+
+void Delay_us(uint32_t us){
+	if(us>1){
+		uint32_t count=us*8-6;
+		while(count--);
+	}else{
+		uint32_t count=2;
+		while(count--);
+	}
+}
 
 void SysInit(void) {
 	RCC_DeInit();
@@ -89,27 +107,33 @@ void SetSysClock(void)
 		}
 	}
 	else{}
-
 }
 
-void Delay_us(uint32_t us){
-	if(us>1){
-		uint32_t count=us*8-6;
-		while(count--);
-	}else{
-		uint32_t count=2;
-		while(count--);
-	}
-}
+
 
 int main(void) {
+	GPIO_InitTypeDef Btn;
+
 	SysInit();
 	SystemInit();
 	//SetSysClock();
 
+	ADC1_RCC_Init();
+	ADC1_GPIO_init();
+	ADC1_SENSOR_init();
+
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+
+	Btn.GPIO_Mode   = GPIO_Mode_IPD;
+	Btn.GPIO_Pin    = (GPIO_Pin_13);
+
+	GPIO_Init(GPIOC, &Btn);
+
+	LCD_Init();
+	LCD_Clear(WHITE);
+
 	LED_RCC_Init();
 	LED_Configure();
-
 
 	USART1_RCC_Init();
 	USART1_GPIO_Init();
@@ -132,6 +156,20 @@ int main(void) {
 	UART4_InterruptConfigure();
 
 	while (1){
+		if(i<1001){
+			i++;
+			if(i % 100 == 0){
+				mp3_set_volume(20);
+				//mp3_play();
+			}
+		}
+		
+		if(!(GPIOC->IDR & GPIO_Pin_13)){
+			USART3_READY=1;
+			Delay_us(1000000);
+		}
+
+
 		if(USART1_READY){
 			USART1_Handler_Method();
 			USART1_READY = 0;

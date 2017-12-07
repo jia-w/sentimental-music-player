@@ -33,7 +33,7 @@ char JSON[2000] 		= "";
 /*
  * 1.  기쁨 - 사랑, 밝은 행복, 활기찬  "happy"
 2.  슬픔 - 이별, 잔잔한  "sad"
-3.  우울 - 지친, 쓸쓸  "despressed"
+3.  우울 - 지친, 쓸쓸  "depressed"
 4.  센치 - 그리움, 추억, 새벽, 비  "senti"
 5.  설렘 - 고백, 썸 탈때 "ssum"
 6.  편한 - 따뜻 "comfortable"
@@ -43,7 +43,7 @@ const char* OFF 		= "off";
 const char* AT			= "AT+RST";
 const char* HAPPY		= "happy";
 const char* SAD			= "sad";
-const char* DESP  		= "despressed";
+const char* DESP  		= "depressed";
 const char* SENTI		= "senti";
 const char* SSUM		= "ssum";
 const char* COMF 		= "comfortable";
@@ -335,7 +335,10 @@ void USART2_Handler_Method(){
 		USART_Puts(USART1, "BT : sad received!\r\n");
 	}
 	if(findStr(DESP,USART2_M)){
-		USART_Puts(USART1, "BT : despressed received!\r\n");
+		USART_Puts(USART1, "BT : depressed received!\r\n");
+	}
+	if(findStr(SENTI,USART2_M)){
+		USART_Puts(USART1, "BT : senti received!\r\n");
 	}
 	if(findStr(SSUM,USART2_M)){
 		USART_Puts(USART1, "BT : ssum received!\r\n");
@@ -352,7 +355,7 @@ void USART3_Handler_Method(){
 	USART_SendString(USART1, USART3_M, USART3_SEND);
 	//mp3_send_cmd (0x01);
 	//mp3_play_num(MP3_NUM++);
-	
+
 	USART3_SEND = 0;
 }
 

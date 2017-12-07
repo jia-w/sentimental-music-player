@@ -2,8 +2,11 @@
 #define __GAMSONG_ADC_H__
 
 
-//extern uint16_t illum;
-extern uint32_t ADC_DualConvertedValueTab[3];
+extern uint16_t sensor_temper;
+extern uint16_t sensor_humid;
+extern uint16_t sensor_illum;
+extern uint16_t sensor_rain;
+extern uint32_t ADC_DualConvertedValueTab[4];
 
 
 void ADC1_RCC_Init(void);

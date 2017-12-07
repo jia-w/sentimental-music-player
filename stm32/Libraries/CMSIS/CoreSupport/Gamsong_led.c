@@ -16,23 +16,23 @@ void LED_Configure(){
 
 	LED.GPIO_Mode   = GPIO_Mode_Out_PP;
 	LED.GPIO_Speed  = GPIO_Speed_50MHz;
-	LED.GPIO_Pin    = (GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_7);
+	LED.GPIO_Pin    = (GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_7);
 
 	GPIO_Init(GPIOD, &LED);
 }
 
 void LED_TurnOnAll(){
-    GPIO_SetBits  (GPIOD,GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_7);
+    GPIO_SetBits  (GPIOD,GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_7);
 }
 	
 void LED_TurnOffAll(){
-    GPIO_ResetBits(GPIOD,GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_7);
+    GPIO_ResetBits(GPIOD,GPIO_Pin_3 | GPIO_Pin_4 | GPIO_Pin_7);
 }
 
 void LED_TurnOn(uint16_t LED1, uint16_t LED2, uint16_t LED3, uint16_t LED4){
     uint16_t    GPIO_Pin = 0x0000;
 
-    if(LED1)    GPIO_Pin |= GPIO_Pin_2;
+    //if(LED1)    GPIO_Pin |= GPIO_Pin_2;
     if(LED2)    GPIO_Pin |= GPIO_Pin_3;
     if(LED3)    GPIO_Pin |= GPIO_Pin_4;
     if(LED4)    GPIO_Pin |= GPIO_Pin_7;
@@ -43,7 +43,7 @@ void LED_TurnOn(uint16_t LED1, uint16_t LED2, uint16_t LED3, uint16_t LED4){
 void LED_TurnOff(uint16_t LED1, uint16_t LED2, uint16_t LED3, uint16_t LED4){
     uint16_t    GPIO_Pin = 0x0000;
 
-    if(LED1)    GPIO_Pin |= GPIO_Pin_2;
+    //if(LED1)    GPIO_Pin |= GPIO_Pin_2;
     if(LED2)    GPIO_Pin |= GPIO_Pin_3;
     if(LED3)    GPIO_Pin |= GPIO_Pin_4;
     if(LED4)    GPIO_Pin |= GPIO_Pin_7;

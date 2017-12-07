@@ -4,15 +4,29 @@
 #include <stm32f10x_gpio.h>
 #include <stm32f10x_rcc.h>
 #include <stm32f10x_usart.h>
-#include "Gamsong_led.h"
-#include "Gamsong_usart.h"
-
 #include <string.h>
-#include "Gamsong_usart.h"
+#include <math.h>
+
+#include "lcd.h"
+#include "Touch.h"
 #include "Gamsong_led.h"
 #include "Gamsong_usart.h"
+#include "Gamsong_adc.h"
+#include "Gamsong_mp3.h"
+#include "Gamsong_wifi.h"
 
+uint16_t MP3_init = 0;
+int color[12]={WHITE,CYAN,BLUE,RED,MAGENTA,LGRAY,GREEN,YELLOW,BROWN,BRRED,GRAY};
 
+void Delay_us(uint32_t us){
+	if(us>1){
+		uint32_t count=us*8-6;
+		while(count--);
+	}else{
+		uint32_t count=2;
+		while(count--);
+	}
+}
 
 void SysInit(void) {
 	RCC_DeInit();
@@ -92,27 +106,35 @@ void SetSysClock(void)
 		}
 	}
 	else{}
-
 }
 
-void Delay_us(uint32_t us){
-	if(us>1){
-		uint32_t count=us*8-6;
-		while(count--);
-	}else{
-		uint32_t count=2;
-		while(count--);
-	}
-}
+
 
 int main(void) {
+	GPIO_InitTypeDef Btn;
+
 	SysInit();
 	SystemInit();
 	//SetSysClock();
 
+
+	ADC1_RCC_Init();
+	ADC1_GPIO_init();
+	ADC1_SENSOR_init();
+
+
+	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
+
+	Btn.GPIO_Mode   = GPIO_Mode_IPD;
+	Btn.GPIO_Pin    = (GPIO_Pin_13);
+
+	GPIO_Init(GPIOC, &Btn);
+
+	LCD_Init();
+	LCD_Clear(WHITE);
+
 	LED_RCC_Init();
 	LED_Configure();
-
 
 	USART1_RCC_Init();
 	USART1_GPIO_Init();
@@ -121,16 +143,34 @@ int main(void) {
 
 	USART2_RCC_Init();
 	USART2_GPIO_Init();
-	USART2_Configure(115200);
+	USART2_Configure(9600);
 	USART2_InterruptConfigure();
 
-	//rx-ÁÖÈ², tx-³ë¶û,
 	USART3_RCC_Init();
 	USART3_GPIO_Init();
-	USART3_Configure(115200);
+	USART3_Configure(9600);
 	USART3_InterruptConfigure();
+	//
+	UART4_RCC_Init();
+	UART4_GPIO_Init();
+	UART4_Configure(115200);
+	UART4_InterruptConfigure();
 
 	while (1){
+		ADC1_EXEC();
+		if(!MP3_init && end_JSON){
+			mp3_set_volume(15);
+			Delay_us(30000);
+			mp3_send_cmd(0x1);
+			Delay_us(30000);
+			MP3_init = 1;
+		}
+
+		if(!(GPIOC->IDR & GPIO_Pin_13)){
+			mp3_send_cmd (0x01);
+			Delay_us(1000000);
+		}
+
 		if(USART1_READY){
 			USART1_Handler_Method();
 			USART1_READY = 0;
@@ -142,6 +182,10 @@ int main(void) {
 		if(USART3_READY){
 			USART3_Handler_Method();
 			USART3_READY = 0;
+		}
+		if(UART4_READY){
+			UART4_Handler_Method();
+			UART4_READY = 0;
 		}
 	}
 	return 0;

@@ -9,6 +9,7 @@ extern uint16_t USART2_READY;
 extern uint16_t USART3_READY;
 extern uint16_t UART4_READY;
 extern uint16_t UART5_READY;
+extern uint16_t end_JSON;
 
 extern char JSON[2000];
 extern int JSON_SZ;

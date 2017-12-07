@@ -11,6 +11,7 @@
 #include "Gamsong_usart.h"
 #include "Gamsong_led.h"
 #include "Gamsong_wifi.h"
+#include "Gamsong_mp3.h"
 #include "Gamsong_json.h"
 #include "Gamsong_algorithm.h"
 
@@ -29,9 +30,24 @@ char UART4_M[1000]   	= "";
 char UART5_M[1000]   	= "";
 char JSON[2000] 		= "";
 
+/*
+ * 1.  기쁨 - 사랑, 밝은 행복, 활기찬  "happy"
+2.  슬픔 - 이별, 잔잔한  "sad"
+3.  우울 - 지친, 쓸쓸  "despressed"
+4.  센치 - 그리움, 추억, 새벽, 비  "senti"
+5.  설렘 - 고백, 썸 탈때 "ssum"
+6.  편한 - 따뜻 "comfortable"
+ */
 const char*	ON 			= "on";
 const char* OFF 		= "off";
 const char* AT			= "AT+RST";
+const char* HAPPY		= "happy";
+const char* SAD			= "sad";
+const char* DESP  		= "despressed";
+const char* SENTI		= "senti";
+const char* SSUM		= "ssum";
+const char* COMF 		= "comfortable";
+
 
 
 int USART1_INDEX = 0, USART1_SEND = 0;
@@ -41,7 +57,7 @@ int UART4_INDEX = 0, UART4_SEND = 0;
 int UART5_INDEX = 0, UART5_SEND = 0;
 
 int JSON_SZ = 0;
-
+int MP3_NUM = 1;
 /** caution : AFIO -> APB2 **/
 void USART1_RCC_Init(){
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_USART1, ENABLE);
@@ -309,12 +325,34 @@ void USART1_Handler_Method(){
 
 void USART2_Handler_Method(){
 	USART_SendString(USART1, USART2_M, USART2_SEND);
+	if(findStr("OK",USART2_M)){
+		USART_Puts(USART2,"AT+BTSCAN\r\n");
+	}
+	if(findStr(HAPPY,USART2_M)){
+		USART_Puts(USART1, "BT : happy received!\r\n");
+	}
+	if(findStr(SAD,USART2_M)){
+		USART_Puts(USART1, "BT : sad received!\r\n");
+	}
+	if(findStr(DESP,USART2_M)){
+		USART_Puts(USART1, "BT : despressed received!\r\n");
+	}
+	if(findStr(SSUM,USART2_M)){
+		USART_Puts(USART1, "BT : ssum received!\r\n");
+	}
+	if(findStr(COMF,USART2_M)){
+		USART_Puts(USART1, "BT : comfortable received!\r\n");
+	}
+
 	USART2_SEND = 0;
 }
 
 void USART3_Handler_Method(){
+	USART_Puts(USART1, "MP3 : RECEIVE NEXT COMMEND\r\n");
 	USART_SendString(USART1, USART3_M, USART3_SEND);
-	mp3_send_cmd (0x01);
+	//mp3_send_cmd (0x01);
+	//mp3_play_num(MP3_NUM++);
+	
 	USART3_SEND = 0;
 }
 
@@ -350,7 +388,7 @@ void UART4_Handler_Method(){
 		WIFI_IS_NEXT = 1;
 		WIFI_STAGE = 0;
 	}
-	
+
 
 	if(WIFI_IS_NEXT){
 		WIFI_IS_NEXT = 0;

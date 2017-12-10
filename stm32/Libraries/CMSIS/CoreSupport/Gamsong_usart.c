@@ -5,6 +5,7 @@
 #include <stm32f10x_usart.h>
 #include <stm32f10x_exti.h>
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
@@ -13,6 +14,7 @@
 #include "Gamsong_wifi.h"
 #include "Gamsong_mp3.h"
 #include "Gamsong_json.h"
+#include "Gamsong_adc.h"
 #include "Gamsong_algorithm.h"
 
 uint16_t USART1_READY = 0;
@@ -31,7 +33,7 @@ char UART5_M[1000]   	= "";
 char JSON[2000] 		= "";
 
 /*
- * 1.  기쁨 - 사랑, 밝은 행복, 활기찬  "happy"
+1.  기쁨 - 사랑, 밝은 행복, 활기찬  "happy"
 2.  슬픔 - 이별, 잔잔한  "sad"
 3.  우울 - 지친, 쓸쓸  "depressed"
 4.  센치 - 그리움, 추억, 새벽, 비  "senti"
@@ -40,6 +42,12 @@ char JSON[2000] 		= "";
  */
 const char*	ON 			= "on";
 const char* OFF 		= "off";
+const char* PLAY		= "play";
+const char* PAUSE		= "pause";
+const char* PREV		= "prev";
+const char* NEXT 		= "next";
+const char* UP 			= "up";
+const char* DOWN 		= "down";
 const char* AT			= "AT+RST";
 const char* HAPPY		= "happy";
 const char* SAD			= "sad";
@@ -47,7 +55,7 @@ const char* DESP  		= "depressed";
 const char* SENTI		= "senti";
 const char* SSUM		= "ssum";
 const char* COMF 		= "comfortable";
-
+const char* PLZ			= "please";
 
 
 int USART1_INDEX = 0, USART1_SEND = 0;
@@ -325,26 +333,67 @@ void USART1_Handler_Method(){
 
 void USART2_Handler_Method(){
 	USART_SendString(USART1, USART2_M, USART2_SEND);
-	if(findStr("OK",USART2_M)){
-		USART_Puts(USART2,"AT+BTSCAN\r\n");
+	if(findStr(PLZ,USART2_M)){
+		char str[10];
+		USART_Puts(USART2, "temper : ");
+		sprintf(str, "%d", (int)sensor_temper);
+		USART_Puts(USART2, str);
+		USART_Puts(USART2, " humid : ");
+		sprintf(str, "%d", (int)sensor_humid);
+		USART_Puts(USART2, str);
+		USART_Puts(USART2, " illum : ");
+		sprintf(str, "%d", (int)sensor_illum);
+		USART_Puts(USART2, str);
+		USART_Puts(USART2, " rain : ");
+		sprintf(str, "%d", (int)sensor_rain);
+		USART_Puts(USART2, str);
+		USART_Puts(USART2, "\r\n");
 	}
+	if(findStr("OK",USART2_M))
+		USART_Puts(USART2,"AT+BTSCAN\r\n");
+
+	if(findStr(PREV,USART2_M))
+		mp3_prev();
+
+	if(findStr(NEXT,USART2_M))
+		mp3_next();
+
+	if(findStr(UP,USART2_M))
+		mp3_send_cmd(0x04);
+
+	if(findStr(DOWN, USART2_M))
+		mp3_send_cmd(0x05);
+
+	if(findStr(PLAY,USART2_M))
+		mp3_send_cmd(0x0D);
+
+	if(findStr(PAUSE,USART2_M))
+		mp3_send_cmd(0x0E);
+
+
 	if(findStr(HAPPY,USART2_M)){
-		USART_Puts(USART1, "BT : happy received!\r\n");
+		replaceStr(GAMSONG_STRING, HAPPY);
+		mp3_select_folder();
 	}
 	if(findStr(SAD,USART2_M)){
-		USART_Puts(USART1, "BT : sad received!\r\n");
+		replaceStr(GAMSONG_STRING, SAD);
+		mp3_select_folder();
 	}
 	if(findStr(DESP,USART2_M)){
-		USART_Puts(USART1, "BT : depressed received!\r\n");
+		replaceStr(GAMSONG_STRING, DESP);
+		mp3_select_folder();
 	}
 	if(findStr(SENTI,USART2_M)){
-		USART_Puts(USART1, "BT : senti received!\r\n");
+		replaceStr(GAMSONG_STRING, SENTI);
+		mp3_select_folder();
 	}
 	if(findStr(SSUM,USART2_M)){
-		USART_Puts(USART1, "BT : ssum received!\r\n");
+		replaceStr(GAMSONG_STRING, SSUM);
+		mp3_select_folder();
 	}
 	if(findStr(COMF,USART2_M)){
-		USART_Puts(USART1, "BT : comfortable received!\r\n");
+		replaceStr(GAMSONG_STRING, COMF);
+		mp3_select_folder();
 	}
 
 	USART2_SEND = 0;

@@ -14,6 +14,7 @@
 #include "Gamsong_adc.h"
 #include "Gamsong_mp3.h"
 #include "Gamsong_wifi.h"
+#include "Gamsong_algorithm.h"
 
 uint16_t MP3_init = 0;
 int color[12]={WHITE,CYAN,BLUE,RED,MAGENTA,LGRAY,GREEN,YELLOW,BROWN,BRRED,GRAY};
@@ -118,10 +119,6 @@ int main(void) {
 	//SetSysClock();
 
 
-	ADC1_RCC_Init();
-	ADC1_GPIO_init();
-	ADC1_SENSOR_init();
-
 
 	RCC_APB2PeriphClockCmd(RCC_APB2Periph_GPIOC, ENABLE);
 
@@ -130,11 +127,12 @@ int main(void) {
 
 	GPIO_Init(GPIOC, &Btn);
 
-	LCD_Init();
-	LCD_Clear(WHITE);
-
 	LED_RCC_Init();
 	LED_Configure();
+	ADC1_RCC_Init();
+	ADC1_GPIO_init();
+	ADC1_SENSOR_init();
+
 
 	USART1_RCC_Init();
 	USART1_GPIO_Init();
@@ -150,7 +148,7 @@ int main(void) {
 	USART3_GPIO_Init();
 	USART3_Configure(9600);
 	USART3_InterruptConfigure();
-	//
+
 	UART4_RCC_Init();
 	UART4_GPIO_Init();
 	UART4_Configure(115200);
@@ -158,16 +156,20 @@ int main(void) {
 
 	while (1){
 		ADC1_EXEC();
+
 		if(!MP3_init && end_JSON){
-			mp3_set_volume(15);
-			Delay_us(30000);
-			mp3_send_cmd(0x1);
-			Delay_us(30000);
+			set_GamsongString();
+			USART_Puts(USART1, GAMSONG_STRING);
+			mp3_set_volume(20);
+			Delay_us(100);
+			mp3_select_folder();
 			MP3_init = 1;
+
 		}
 
+
 		if(!(GPIOC->IDR & GPIO_Pin_13)){
-			mp3_send_cmd (0x01);
+			mp3_next();
 			Delay_us(1000000);
 		}
 

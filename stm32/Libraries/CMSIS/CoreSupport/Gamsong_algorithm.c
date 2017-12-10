@@ -1,3 +1,4 @@
+#include <stm32f10x_usart.h>
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
@@ -66,6 +67,9 @@ void jsonCopy(char* str, int SZ){
     for(i = 0; i < SZ ; ++i)
     	JSON[JSON_SZ++] = str[i];
 }
+double get_discomfortIndex(){
+    return 0.72*(sensor_temper+ sensor_humid)+40.6;
+}
 
 char* isWeather(char *s){
     char str[2];
@@ -115,11 +119,22 @@ int parse_sec(char* time){
 
 
 void set_GamsongString(){
-    int now_temp = parseInt(temp_current, strlen(temp_current));
-    if(sensor_rain <= 2000 && compareStr(isWeather(sky),"rainy") && (parseInt(type,strlen(type)) == 1 || parseInt(type,1) == 2))
+    int tempSZ = 0, now_temp;
+    while(temp_current[++tempSZ] != '.');
+    now_temp = parseInt(temp_current, tempSZ);
+    if(temp_current[tempSZ+1] >= 5) now_temp++;
+
+    //rain
+    if(sensor_rain <= 2000 && compareStr(isWeather(sky),"rainy") && (parseInt(type,1) == 1 || parseInt(type,1) == 2))
         replaceStr(GAMSONG_STRING,"senti");
-    else if(compareStr(isWeather(sky), "snowy") && parseInt(type,strlen(type)) == 3)
+    //snow
+    else if(compareStr(isWeather(sky), "snowy") && parseInt(type,1) == 3)
         replaceStr(GAMSONG_STRING,"comfortable");
+    //humid : 76 => 50% people feel discomfort
+    else if(get_discomfortIndex() > 76){
+        replaceStr(GAMSONG_STRING, "happy");
+    }
+    //temp
     else{
         if(now_temp <= 10){
             if(sensor_temper <= 20)
@@ -138,6 +153,52 @@ void set_GamsongString(){
                 replaceStr(GAMSONG_STRING, "ssum");
             else if(parse_month(time_current) > 9)
                 replaceStr(GAMSONG_STRING, "depressed");
+            else{
+                if(parse_hour(time_current) >= 18 || parse_hour(time_current) <= 6){
+                    if(1700 <= sensor_illum && sensor_illum <= 2300)
+                        replaceStr(GAMSONG_STRING, "depressed");
+                    else if(1200 <= sensor_illum && sensor_illum < 1700)
+                        replaceStr(GAMSONG_STRING, "comfortable");
+                    else
+                        replaceStr(GAMSONG_STRING,"senti");
+                }
+                else{
+                    if(1600 <= sensor_illum && sensor_illum < 2000)
+                        replaceStr(GAMSONG_STRING, "comfortable");
+                    else if(2000 <= sensor_illum && sensor_illum < 2600)
+                        replaceStr(GAMSONG_STRING, "happy");
+                }
+            }
         }
     }
+}
+
+
+int get_GamsongNum(void){
+    if(compareStr("happy",GAMSONG_STRING))			{
+    	USART_Puts(USART1, "send : happy\r\n");
+    	return 1;
+    }
+    if(compareStr("sad",GAMSONG_STRING))			{
+    	USART_Puts(USART1, "send : sad\r\n");
+    	return 2;
+    }
+    if(compareStr("depressed",GAMSONG_STRING))		{
+    	USART_Puts(USART1, "send : depressed\r\n");
+    	return 3;
+    }
+    if(compareStr("senti",GAMSONG_STRING))			{
+    	USART_Puts(USART1, "send : senti\r\n");
+
+    	return 4;
+    }
+    if(compareStr("ssum",GAMSONG_STRING))			{
+    	USART_Puts(USART1, "send : ssum\r\n");
+    	return 5;
+    }
+    if(compareStr("comfortable",GAMSONG_STRING))	{
+    	USART_Puts(USART1, "send : comfortable\r\n");
+    	return 6;
+    }
+    return 1;
 }

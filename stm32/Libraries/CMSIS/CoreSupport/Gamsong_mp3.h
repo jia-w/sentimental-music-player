@@ -70,6 +70,6 @@ void mp3_single_play (uint16_t num);
 void mp3_DAC (uint16_t state);
 void mp3_random_play (void);
 
-
+void mp3_select_folder(void);
 
 #endif

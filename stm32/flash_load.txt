@@ -1,5 +1,0 @@
-//  flash load "/*path*/\flashclear.axf"
-//  flash load "/*path*/\Debug\mon.axf"
-
-flash load "C:\Users\hw_4\Desktop\mon\flashclear.axf"
-flash load "C:\Users\hw_4\Desktop\mon\Debug\mon.axf"

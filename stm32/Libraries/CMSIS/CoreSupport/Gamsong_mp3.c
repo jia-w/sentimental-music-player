@@ -7,6 +7,19 @@
 #include "Gamsong_algorithm.h"
 
 
+
+/****
+ 1: 6개
+ 2: 5개
+ 3: 3개
+ 4: 3개
+ 5: 5개
+ 6: 3개
+ ******/
+int mp3_start[7] = {0,1,7,12,15,18,23};
+int mp3_SZ[7] = {0,6,5,3,3,5,3};
+int folder = 1, track = 1;
+
 char send_buf[10] = {0x7E, 0xFF, 06, 00, 00, 00, 00, 00, 00, 0xEF};
 uint16_t is_reply = 0;
 
@@ -79,13 +92,7 @@ void mp3_play_physical () {
 	mp3_send_cmd (0x03);
 }
 
-void mp3_next () {
-	mp3_send_cmd (0x01);
-}
 
-void mp3_prev () {
-	mp3_send_cmd (0x02);
-}
 
 //0x06 set volume 0-30
 void mp3_set_volume (uint16_t volume) {
@@ -179,4 +186,31 @@ void mp3_DAC (uint16_t state) {
 
 void mp3_random_play () {
 	mp3_send_cmd (0x18);
+}
+
+
+
+void mp3_select_folder(){
+	folder = get_GamsongNum();
+
+	mp3_play_physical_num((uint16_t)mp3_start[folder]);
+
+}
+void mp3_next () {
+	if(track < mp3_SZ[folder])
+		track++;
+	else
+		track = 0;
+
+	mp3_play_physical_num((uint16_t)(mp3_start[folder]+track));
+
+}	
+
+void mp3_prev () {
+	if(1 < track)
+		track--;
+	else
+		track = mp3_SZ[folder];
+	mp3_play_physical_num((uint16_t)(mp3_start[folder]+track));
+
 }
